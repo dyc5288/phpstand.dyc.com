@@ -1,0 +1,58 @@
+---
+kind: pipeline
+type: docker
+name: default
+platform:
+  os: linux
+  arch: amd64
+steps:
+  - name: backend
+    pull: if-not-exists
+    image: kudang/php:7.3
+    commands:
+      - php -v
+      - composer -V
+      - composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+      - composer install --prefer-dist
+      - tar zcf ${DRONE_REPO_NAME}.tgz --exclude=.git * .[!.]*
+    when:
+      event:
+        - push
+      branch:
+        - master
+        - 6039*
+  - name: upload
+    pull: if-not-exists
+    image: appleboy/drone-scp
+    settings:
+      host:
+        from_secret: ssh_host
+      username:
+        from_secret: ssh_username
+      password:
+        from_secret: ssh_password
+      port:
+        from_secret: ssh_port
+      target: /data/autopatch/${DRONE_BRANCH}
+      source: ${DRONE_REPO_NAME}.tgz
+    when:
+      event:
+        - push
+      branch:
+        - master
+        - 6039*
+  - name: notification
+    image: lddsb/drone-dingtalk-message
+    when:
+      status:
+        - failure
+        - success
+    settings:
+      token: 26f1bbfe71c5f97517c270b9e4e99f54187b99360a0f9df697d6ae73dd1bee17
+      type: markdown
+      secret: SEC03f234ffb0f848c88ffb946289dcba5e575c922340e9b5b9543f1d0545ae554a
+      tips_title: 又写新Bug啦
+      tpl: https://infogo.tech/notify.tpl
+      success_color: 00FF00
+      failure_color: FF0000
+...

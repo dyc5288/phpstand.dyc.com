@@ -1,0 +1,34 @@
+{
+    "name": "nac/asm",
+    "description": "ASM",
+    "type": "project",
+    "license": "Commercial",
+    "require": {
+        "php": ">=7.3",
+        "phpmailer/phpmailer": "6.4.1",
+        "apereo/phpcas": "1.4.0",
+        "jenssegers/agent": "2.6.4"
+    },
+    "config": {
+        "platform": {
+            "php": "7.3"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Services\\": "service/"
+        },
+        "classmap": [
+            "helper/",
+            "library/",
+            "service/",
+            "model/"
+        ]
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    }
+}
